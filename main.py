@@ -15,7 +15,6 @@ warnings.filterwarnings('ignore')
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    filename = 'virus_hw1.csv'
     dataset_labeled = pd.read_csv('variant_labeled.csv')
     dataset_unlabeled = pd.read_csv('variant_unlabeled.csv')
     # Q1:
@@ -23,11 +22,13 @@ if __name__ == '__main__':
 
 
     #correlation matrix with new features
-    plt.rc('xtick', labelsize=20)
-    plt.rc('ytick', labelsize=20)
-    corrMatrix = train.corr()
-    plt.figure(figsize=(20, 20))
-    plt.title('Final Correlation Map', fontsize=20)
-    ax = sns.heatmap(corrMatrix, xticklabels=True, yticklabels=True, annot=True)
-    plt.show()
+    # plt.rc('xtick', labelsize=20)
+    # plt.rc('ytick', labelsize=20)
+    # corrMatrix = train.corr()
+    # plt.figure(figsize=(20, 20))
+    # plt.title('Final Correlation Map', fontsize=20)
+    # ax = sns.heatmap(corrMatrix, xticklabels=True, yticklabels=True, annot=True)
+    # plt.show()
     # plt.savefig('correlation_matrix.jpg', bbox_inches='tight')
+
+    print(dataset_labeled.info())
