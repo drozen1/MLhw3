@@ -17,6 +17,32 @@ from sklearn.metrics import mean_squared_error, make_scorer
 from sklearn.linear_model import Ridge
 
 warnings.filterwarnings('ignore')
+from sklearn.base import BaseEstimator, RegressorMixin
+
+
+class MultiRegressor(BaseEstimator, RegressorMixin):
+ def __init__(self, h_male, h_female):
+    self.h_male = h_male
+    self.h_female = h_female
+
+ def fit(self, dataset):
+    men = dataset[dataset.Sex == 0]
+    xmen = men.drop(['VariantScore'], axis=1)
+    female = dataset[dataset.Sex == 1]
+    xfemale = female.drop(['VariantScore'], axis=1)
+    self.h_male.fit(xmen,men.VariantScore )
+    self.h_female.fit(xfemale,female.VariantScore)
+    return self
+
+ def predict(self, X):
+    # X should be a pandas dataframe
+    all_predictions = []
+
+    # for index, x in X.iterrows():
+    #     y_pred = TODO
+    #     all_predictions.append(y_pred)
+
+    return all_predictions
 
 def CV_evaluation(h, X_train, y_train, n_splits=5):
     scores = cross_validate(h, X_train, y_train, cv=n_splits,
@@ -102,6 +128,8 @@ if __name__ == '__main__':
     """""
     """""
     scale = range(10,100)
+    scale = np.logspace(-5, 1.2, num=100)
+   # scale = np.linspace(-4, 4, num=100)
     train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
     plt.semilogx(scale, train_list, c='b')
     plt.semilogx(scale, valid_list, c='y')
@@ -121,3 +149,7 @@ if __name__ == '__main__':
     plt.grid()
     # plt.show()
     plt.savefig('weights.jpg', bbox_inches='tight')
+
+    #Q12
+    Multi_Regressor =MultiRegressor(sklearn.dummy.DummyRegressor(strategy='mean'),sklearn.dummy.DummyRegressor(strategy='mean'))
+    Multi_Regressor.fit(data_after_drop)
