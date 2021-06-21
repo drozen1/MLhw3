@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
+
+import sklearn.dummy
 from sklearn.model_selection import train_test_split
 from sklearn.tree import plot_tree, DecisionTreeClassifier
 import warnings
@@ -18,10 +20,21 @@ warnings.filterwarnings('ignore')
 def CV_evaluation(h, X_train, y_train, n_splits=5):
     scores = cross_validate(h, X_train, y_train, cv=n_splits,
                             scoring=make_scorer(mean_squared_error), return_train_score=True)
-    # TODO
-    train_mse = 0
-    valid_mse = 0
+    train_mse = np.sum(scores['train_score'])/n_splits
+    valid_mse = np.sum(scores['test_score'])/n_splits
     return (train_mse, valid_mse)
+
+def calcHyperparameter(scale, trainX, trainY):
+    train = []
+    validation = []
+    for Alpha in scale:
+        h = sklearn.linear_model.Ringe(alpha=Alpha, fir_intercept=True)
+        train_mse, valid_mse = CV_evaluation(h, trainX, trainY, n_splits=5)
+        train.append(train_mse)
+        validation.append(valid_mse)
+        return (train,validation)
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -64,3 +77,15 @@ if __name__ == '__main__':
     """""
 
     # Q7 CV evaluation using dummy regressor:
+    # reading the numeric and final train set:
+    data_after_drop = pd.read_csv('train_labeld.csv')
+    trainX = data_after_drop.drop(['VariantScore'], axis=1)
+    trainY = data_after_drop.VariantScore
+    h1 = sklearn.dummy.DummyRegressor(strategy='mean')
+    train_mse, valid_mse = CV_evaluation(h1, trainX, trainY, n_splits=5)
+    print(train_mse)
+    print(valid_mse)
+    # scale = np.logspace(-4,6,num=50)
+    # train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
+    # plt.scatter()
+
