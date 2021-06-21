@@ -14,6 +14,7 @@ import math
 import re
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import mean_squared_error, make_scorer
+from sklearn.linear_model import Ridge
 
 warnings.filterwarnings('ignore')
 
@@ -28,11 +29,11 @@ def calcHyperparameter(scale, trainX, trainY):
     train = []
     validation = []
     for Alpha in scale:
-        h = sklearn.linear_model.Ringe(alpha=Alpha, fir_intercept=True)
+        h = sklearn.linear_model.Ridge(alpha=Alpha, fit_intercept=True)
         train_mse, valid_mse = CV_evaluation(h, trainX, trainY, n_splits=5)
         train.append(train_mse)
         validation.append(valid_mse)
-        return (train,validation)
+    return (train,validation)
 
 
 
@@ -85,7 +86,38 @@ if __name__ == '__main__':
     train_mse, valid_mse = CV_evaluation(h1, trainX, trainY, n_splits=5)
     print(train_mse)
     print(valid_mse)
-    # scale = np.logspace(-4,6,num=50)
-    # train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
-    # plt.scatter()
-
+    """""
+    scale = np.logspace(-2.5,2.3,num=50)
+    train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
+    plt.loglog(scale, train_list, c='b')
+    plt.loglog(scale, valid_list, c='y')
+    plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
+    plt.title('Tuning of $\lambda$')
+    plt.xlabel('$\lambda$')
+    plt.ylabel('mse')
+    plt.legend(['train', 'validation'], loc='lower left')
+    plt.grid()
+    plt.savefig('lambda_dummy_log.jpg', bbox_inches='tight')
+    plt.close()
+    """""
+    """""
+    scale = range(10,100)
+    train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
+    plt.semilogx(scale, train_list, c='b')
+    plt.semilogx(scale, valid_list, c='y')
+    plt.title('Tuning of $\lambda$')
+    plt.xlabel('$\lambda$')
+    plt.ylabel('mse')
+    plt.legend(['train', 'validation'], loc='lower left')
+    plt.grid()
+    plt.savefig('lambda_dummy.jpg', bbox_inches='tight')
+    plt.close()
+    """""
+    Alpha = 50
+    columns = list(trainX)
+    h = sklearn.linear_model.Ridge(alpha=Alpha, fit_intercept=True)
+    h.fit(trainX, trainY)
+    pd.Series(abs(h.coef_), index=trainX.columns).nlargest(5).plot(kind='barh')
+    plt.grid()
+    # plt.show()
+    plt.savefig('weights.jpg', bbox_inches='tight')
