@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # plt.figure(figsize=(20, 20))
     # plt.title('Final Correlation Map', fontsize=20)
     # ax = sns.heatmap(corrMatrix, xticklabels=True, yticklabels=True, annot=True)
-    # plt.show()
+    # # plt.show()
     # plt.savefig('correlation_matrix.jpg', bbox_inches='tight')
 
     print(dataset_labeled.info())
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     """""
     # Q3 conditional distribution for BloodType:
     """""
+    train.BloodType = train.BloodType.fillna('missing value')
     g = sns.FacetGrid(train, col="BloodType", height=3.5, aspect=.65, col_wrap=5)
     g.map(sns.kdeplot, "VariantScore")
     g.set_titles(col_template="{col_name}", size=18)
