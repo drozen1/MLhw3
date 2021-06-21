@@ -32,3 +32,22 @@ if __name__ == '__main__':
     # plt.savefig('correlation_matrix.jpg', bbox_inches='tight')
 
     print(dataset_labeled.info())
+
+    # Q2 conditional distribution for Sex:
+    """""
+    sns.kdeplot(data=train, x="VariantScore", hue="Sex", multiple="stack")
+    plt.title('Condition Distribution of Sex')
+    plt.grid()
+    plt.savefig('ConditionalDistributionSex.jpg', bbox_inches='tight')
+    """""
+    # Q3 conditional distribution for BloodType:
+    """""
+    g = sns.FacetGrid(train, col="BloodType", height=3.5, aspect=.65, col_wrap=5)
+    g.map(sns.kdeplot, "VariantScore")
+    g.set_titles(col_template="{col_name}", size=18)
+    g.set_xlabels(size=18)
+    g.set_axis_labels("VariantScore", "Density")
+    for ax in g.axes:
+        ax.grid(alpha=0.5)
+    plt.savefig('ConditionalDistributionBloodType.jpg', bbox_inches='tight')
+    """""
