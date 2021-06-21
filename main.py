@@ -38,10 +38,14 @@ class MultiRegressor(BaseEstimator, RegressorMixin):
     # X should be a pandas dataframe
     all_predictions = []
 
-    # for index, x in X.iterrows():
-    #     y_pred = TODO
-    #     all_predictions.append(y_pred)
-
+    for index, x in X.iterrows():
+        print(x)
+        if(x.Sex == 0):
+            y_pred = self.h_male.predict([x])
+            all_predictions.append(y_pred)
+        else:
+            y_pred = self.h_female.predict([x])
+            all_predictions.append(y_pred)
     return all_predictions
 
 def CV_evaluation(h, X_train, y_train, n_splits=5):
@@ -65,8 +69,8 @@ def calcHyperparameter(scale, trainX, trainY):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    dataset_labeled = pd.read_csv('variant_labeled.csv')
-    dataset_unlabeled = pd.read_csv('variant_unlabeled.csv')
+    dataset_labeled = pd.read_csv('variant_labeled.csv')#,index_col=[0]
+    dataset_unlabeled = pd.read_csv('variant_unlabeled.csv')#,index_col=[0]
     # Q1:
     train, test = train_test_split(dataset_labeled, test_size=0.2, random_state=14)
 
@@ -105,7 +109,7 @@ if __name__ == '__main__':
 
     # Q7 CV evaluation using dummy regressor:
     # reading the numeric and final train set:
-    data_after_drop = pd.read_csv('train_labeld.csv')
+    data_after_drop = pd.read_csv('train_labeld.csv',index_col=[0])
     trainX = data_after_drop.drop(['VariantScore'], axis=1)
     trainY = data_after_drop.VariantScore
     h1 = sklearn.dummy.DummyRegressor(strategy='mean')
@@ -151,5 +155,7 @@ if __name__ == '__main__':
     plt.savefig('weights.jpg', bbox_inches='tight')
 
     #Q12
-    Multi_Regressor =MultiRegressor(sklearn.dummy.DummyRegressor(strategy='mean'),sklearn.dummy.DummyRegressor(strategy='mean'))
+    Multi_Regressor =MultiRegressor(sklearn.linear_model.Ridge(alpha=10, fit_intercept=True),sklearn.linear_model.Ridge(alpha=0.2, fit_intercept=True))
     Multi_Regressor.fit(data_after_drop)
+    temp = data_after_drop.drop(['VariantScore'], axis=1)
+    Multi_Regressor.predict(temp)
