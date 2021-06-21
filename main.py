@@ -10,8 +10,18 @@ import warnings
 import scipy.stats as stats
 import math
 import re
+from sklearn.model_selection import cross_validate
+from sklearn.metrics import mean_squared_error, make_scorer
 
 warnings.filterwarnings('ignore')
+
+def CV_evaluation(h, X_train, y_train, n_splits=5):
+    scores = cross_validate(h, X_train, y_train, cv=n_splits,
+                            scoring=make_scorer(mean_squared_error), return_train_score=True)
+    # TODO
+    train_mse = 0
+    valid_mse = 0
+    return (train_mse, valid_mse)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -51,3 +61,5 @@ if __name__ == '__main__':
         ax.grid(alpha=0.5)
     plt.savefig('ConditionalDistributionBloodType.jpg', bbox_inches='tight')
     """""
+
+    # Q7 CV evaluation using dummy regressor:
