@@ -43,8 +43,8 @@ class MultiRegressor(BaseEstimator, RegressorMixin):
 
  def predict(self, X):
     # X should be a pandas dataframe
-    print("start")
-    if(X.shape[1]==20):
+
+    if 'VariantScore' in X.columns:
         X = X.drop(['VariantScore'], axis=1)
     all_predictions = []
 
@@ -57,7 +57,7 @@ class MultiRegressor(BaseEstimator, RegressorMixin):
             x = x.drop(x.index[18])
             y_pred = self.h_female.predict([x])
             all_predictions.append(y_pred)
-    print("finish")
+
     return all_predictions
 
 def CV_evaluation(h, X_train, y_train, n_splits=5):
@@ -224,6 +224,7 @@ if __name__ == '__main__':
     print(index_min)
     print(min(valid_list))
     print(scale[index_min])
+    print("print(train_list[index_min]): ",train_list[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
@@ -243,6 +244,7 @@ if __name__ == '__main__':
     print(index_min)
     print(min(valid_list))
     print(scale[index_min])
+    print("print(train_list[index_min]): ",train_list[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
@@ -268,6 +270,7 @@ if __name__ == '__main__':
     # Multi_Regressor.predict(temp)
 
     # Q17
+
     col = list(data_after_drop)
     not_include = ['BloodType', 'Sex', 'VariantScore']
     poly_data = data_after_drop.copy()
@@ -284,7 +287,7 @@ if __name__ == '__main__':
     female = poly_data[poly_data.Sex == 1]
     xfemale = female.drop(['VariantScore'], axis=1)
 
-
+    """""
     scale = np.logspace(-2,12,num=500)
     #1000000000000.0
    # scale = np.linspace(20000000000000, 900000000000000, num=200)
@@ -304,9 +307,9 @@ if __name__ == '__main__':
     plt.grid()
     plt.savefig('male_poly.jpg', bbox_inches='tight')
     plt.close()
+"""""
 
-
-   # """""
+    """""
     # TODO: have two plots: with and without dummy regressor
     scale = np.logspace(6,9,num=500)
     scale = np.linspace(10160000, 12390000, num=500)
@@ -326,10 +329,12 @@ if __name__ == '__main__':
     plt.grid()
     plt.savefig('female_poly.jpg', bbox_inches='tight')
     plt.close()
-    #  """""
+      """""
 
 #     Q20:
-    # Multi_Regressor =MultiRegressor(sklearn.linear_model.Ridge(alpha=10, fit_intercept=True),sklearn.linear_model.Ridge(alpha=0.2, fit_intercept=True))
-    # Multi_Regressor.fit(poly_data)
-    # temp = poly_data.drop(['VariantScore'], axis=1)
-    # Multi_Regressor.predict(temp)
+    Multi_Regressor =MultiRegressor(sklearn.linear_model.Ridge(alpha=387035175879397.0, fit_intercept=True),sklearn.linear_model.Ridge(alpha=11268296.593186373, fit_intercept=True))
+    X_poly_data = poly_data.drop(['VariantScore'], axis=1)
+    Multi_Regressor.fit(X_poly_data,poly_data.VariantScore)
+    train_mse, valid_mse = CV_evaluation(Multi_Regressor, X_poly_data, poly_data.VariantScore, n_splits=5)
+    print(train_mse)
+    print(valid_mse)
