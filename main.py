@@ -115,14 +115,14 @@ if __name__ == '__main__':
     trainX = data_after_drop.drop(['VariantScore'], axis=1)
     trainY = data_after_drop.VariantScore
     # training the dummy regressor
-    """""
+    # """""
     h1 = sklearn.dummy.DummyRegressor(strategy='mean')
     train_mse, valid_mse = CV_evaluation(h1, trainX, trainY, n_splits=5)
     print(train_mse)
     print(valid_mse)
     # retrain:
     dummy_fit = h1.fit(trainX,trainY)
-    """""
+    # """""
 
     # Q8:
     """""
@@ -198,47 +198,65 @@ if __name__ == '__main__':
 
     # Q12
     men = data_after_drop[data_after_drop.Sex == 0]
+    men = men.drop(['Sex'], axis=1)
     xmen = men.drop(['VariantScore'], axis=1)
     female = data_after_drop[data_after_drop.Sex == 1]
+    female = female.drop(['Sex'], axis=1)
     xfemale = female.drop(['VariantScore'], axis=1)
 
     """""
-    scale = np.logspace(-2.5,3,num=50)
+    scale = np.logspace(-2.5,4,num=100)
     train_list, valid_list = calcHyperparameter(scale, xmen, men.VariantScore)
+    index_min = min(range(len(valid_list)), key=valid_list.__getitem__)
+    print(index_min)
+    print(min(valid_list))
+    print(scale[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
     plt.title('Tuning of $\lambda$ for Male')
     plt.xlabel('$\lambda$')
     plt.ylabel('mse')
-    plt.legend(['train', 'validation','dummy regressor validation'], loc='lower left')
+    plt.legend(['train', 'validation', 'dummy regressor validation'], loc='upper left')
     plt.grid()
     plt.savefig('male.jpg', bbox_inches='tight')
     plt.close()
     """""
     """""
-    # TODO: have two plots: with and without dummy regressor
     scale = np.logspace(-0.5,3.5,num=50)
     train_list, valid_list = calcHyperparameter(scale, xfemale, female.VariantScore)
+    index_min = min(range(len(valid_list)), key=valid_list.__getitem__)
+    print(index_min)
+    print(min(valid_list))
+    print(scale[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
-    plt.title('Tuning of $\lambda$ for Female')
+    # plt.title('Tuning of $\lambda$ for Female')
+    plt.title('Tuning of $\lambda$ for Female\n Zoomed In')
     plt.xlabel('$\lambda$')
     plt.ylabel('mse')
-    plt.legend(['train', 'validation', 'dummy regressor validation'], loc='lower left')
+    # plt.legend(['train', 'validation', 'dummy regressor validation'], loc='upper left')
+    plt.legend(['train', 'validation'], loc='lower left')
     plt.grid()
     plt.savefig('female.jpg', bbox_inches='tight')
     plt.close()
     """""
 
     #Q13
-    # Multi_Regressor =MultiRegressor(sklearn.linear_model.Ridge(alpha=10, fit_intercept=True),sklearn.linear_model.Ridge(alpha=0.2, fit_intercept=True))
+    # """""
+    Multi_Regressor = MultiRegressor(sklearn.linear_model.Ridge(alpha=37.214061, fit_intercept=True),sklearn.linear_model.Ridge(alpha=702.973212, fit_intercept=True))
     # Multi_Regressor.fit(data_after_drop)
     # temp = data_after_drop.drop(['VariantScore'], axis=1)
+    train_mse, valid_mse = CV_evaluation(Multi_Regressor, trainX, trainY, n_splits=5)
+    print(train_mse)
+    print(valid_mse)
     # Multi_Regressor.predict(temp)
 
+    # """""
+
     # Q17
+    """""
     col = list(data_after_drop)
     not_include = ['BloodType', 'Sex', 'VariantScore']
     poly_data = data_after_drop.copy()
@@ -254,6 +272,7 @@ if __name__ == '__main__':
     xmen = men.drop(['VariantScore'], axis=1)
     female = poly_data[poly_data.Sex == 1]
     xfemale = female.drop(['VariantScore'], axis=1)
+    """""
     """""
     scale = np.logspace(-2,12,num=500)
     train_list, valid_list = calcHyperparameter(scale, xmen, men.VariantScore)
