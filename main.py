@@ -115,22 +115,26 @@ if __name__ == '__main__':
     trainX = data_after_drop.drop(['VariantScore'], axis=1)
     trainY = data_after_drop.VariantScore
     # training the dummy regressor
-    # """""
+    """""
     h1 = sklearn.dummy.DummyRegressor(strategy='mean')
     train_mse, valid_mse = CV_evaluation(h1, trainX, trainY, n_splits=5)
     print(train_mse)
     print(valid_mse)
     # retrain:
     dummy_fit = h1.fit(trainX,trainY)
-    # """""
+    """""
 
     # Q8:
     """""
-    scale = np.logspace(1,2.3,num=100)
+    scale = np.logspace(-2,5,num=100)
     train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
+    index_min = min(range(len(valid_list)), key=valid_list.__getitem__)
+    print(index_min)
+    print(min(valid_list))
+    print(scale[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
-    # plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
+    plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
     plt.title('Tuning of $\lambda$ for basic linear model')
     plt.xlabel('$\lambda$')
     plt.ylabel('mse')
@@ -140,29 +144,40 @@ if __name__ == '__main__':
     plt.close()
     """""
 
-    # """""
-    scale = range(10,100)
-    scale = np.logspace(-5, 1.2, num=100)
-    scale = np.linspace(-4, 4, num=100)
+    # we ran a more dense check closer to the minimum of the last plot
+    """""
+    # scale = range(10,100)
+    # scale = np.logspace(0, 10, num=100)
+    scale = np.linspace(2, 4, num=100)
     train_list, valid_list = calcHyperparameter(scale, trainX, trainY)
+    index_min = min(range(len(valid_list)), key=valid_list.__getitem__)
+    print(index_min)
+    print(min(valid_list))
+    print(scale[index_min])
+    print(index_min)
+    print(train_list[index_min])
     plt.semilogx(scale, train_list, c='b')
     plt.semilogx(scale, valid_list, c='y')
-    plt.title('Tuning of $\lambda$')
+    plt.title('Tuning of $\lambda$ for basic linear model')
     plt.xlabel('$\lambda$')
     plt.ylabel('mse')
     plt.legend(['train', 'validation', 'dummy regressor validation'], loc='lower left')
     plt.grid()
     plt.savefig('lambda_dummy.jpg', bbox_inches='tight')
     plt.close()
-    # """""
+    """""
 
     # Q10
     """""
-    Alpha = 50
+    Alpha = 3.6565656565656566
     columns = list(trainX)
     h = sklearn.linear_model.Ridge(alpha=Alpha, fit_intercept=True)
     h.fit(trainX, trainY)
-    pd.Series(abs(h.coef_), index=trainX.columns).nlargest(5).plot(kind='barh')
+    a = pd.Series(abs(h.coef_), index=trainX.columns).nlargest(5)[::-1]
+    a.plot(kind='barh')
+    # pd.Series(abs(h.coef_), index=trainX.columns).nlargest(5).plot(kind='barh')
+    plt.title('Most Significant Coefficients for the Basic Linear Regressor')
+    plt.xlabel('Coefficient')
     plt.grid()
     # plt.show()
     plt.savefig('weights.jpg', bbox_inches='tight')
