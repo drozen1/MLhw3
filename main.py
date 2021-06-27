@@ -31,24 +31,33 @@ class MultiRegressor(BaseEstimator, RegressorMixin):
     dataset['VariantScore'] = y
     men = dataset[dataset.Sex == 0]
     xmen = men.drop(['VariantScore'], axis=1)
+    xmen = xmen.drop(['Sex'], axis=1)
     female = dataset[dataset.Sex == 1]
     xfemale = female.drop(['VariantScore'], axis=1)
-    self.h_male.fit(xmen,men.VariantScore )
-    self.h_female.fit(xfemale,female.VariantScore)
+    xfemale = xfemale.drop(['Sex'], axis=1)
+    ymen=men.VariantScore
+    self.h_male=self.h_male.fit(xmen,ymen )
+    yfemale = female.VariantScore
+    self.h_female = self.h_female.fit(xfemale,yfemale)
     return self
 
  def predict(self, X):
     # X should be a pandas dataframe
+    print("start")
+    if(X.shape[1]==20):
+        X = X.drop(['VariantScore'], axis=1)
     all_predictions = []
 
     for index, x in X.iterrows():
-        print(x)
         if(x.Sex == 0):
+            x = x.drop(x.index[18])
             y_pred = self.h_male.predict([x])
             all_predictions.append(y_pred)
         else:
+            x = x.drop(x.index[18])
             y_pred = self.h_female.predict([x])
             all_predictions.append(y_pred)
+    print("finish")
     return all_predictions
 
 def CV_evaluation(h, X_train, y_train, n_splits=5):
@@ -275,7 +284,7 @@ if __name__ == '__main__':
     female = poly_data[poly_data.Sex == 1]
     xfemale = female.drop(['VariantScore'], axis=1)
 
-    """""
+
     scale = np.logspace(-2,12,num=500)
     #1000000000000.0
    # scale = np.linspace(20000000000000, 900000000000000, num=200)
@@ -284,6 +293,7 @@ if __name__ == '__main__':
     print(index_min)
     print(min(valid_list))
     print(scale[index_min])
+    print("print(train_list[index_min]): ",train_list[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
@@ -294,7 +304,7 @@ if __name__ == '__main__':
     plt.grid()
     plt.savefig('male_poly.jpg', bbox_inches='tight')
     plt.close()
-     """""
+
 
    # """""
     # TODO: have two plots: with and without dummy regressor
@@ -305,6 +315,7 @@ if __name__ == '__main__':
     print(index_min)
     print(min(valid_list))
     print(scale[index_min])
+    print("print(train_list[index_min]): ",train_list[index_min])
     plt.loglog(scale, train_list, c='b')
     plt.loglog(scale, valid_list, c='y')
     plt.loglog([min(scale), max(scale)],[valid_mse, valid_mse],c='g')
