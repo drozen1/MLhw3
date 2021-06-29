@@ -7,6 +7,7 @@ import matplotlib.patches as  mpatches
 
 import sklearn.dummy
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.tree import plot_tree, DecisionTreeClassifier
 import warnings
 import scipy.stats as stats
@@ -168,18 +169,20 @@ if __name__ == '__main__':
     data_after_drop = pd.read_csv('train_labeld.csv', index_col=[0])
     data_after_drop_test = pd.read_csv('test_labeld.csv', index_col=[0])
 
-    trainX = data_after_drop.drop(['VariantScore'], axis=1)
-    trainY = data_after_drop.VariantScore
+    trainX = data_after_drop.drop(['VariantScore'], axis=1).copy()
+    trainY = data_after_drop.VariantScore.copy()
     # training the dummy regressor
 
     # """""
     h1 = sklearn.dummy.DummyRegressor(strategy='mean')
     train_mse, valid_mse = CV_evaluation(h1, trainX, trainY, n_splits=5)
+
     print(train_mse)
     print(valid_mse)
     # retrain:
+    """""
     retrain_dummy(trainX, trainY, data_after_drop_test)
-
+    """""
 
 
     # """""
@@ -208,6 +211,7 @@ if __name__ == '__main__':
     retrain_model(h,trainX, trainY, data_after_drop_test)
     """""
     #for part 8:
+
     h = sklearn.linear_model.Ridge(alpha=3.6565656565656566, fit_intercept=True)
     df = calc_pred(h,all_dataX, all_dataY,dataset_unlabeled_normalize)
     df.to_csv(r'C:\Users\dor\PycharmProjects\MLhw3\pred3.csv')
@@ -326,14 +330,16 @@ if __name__ == '__main__':
     print(train_mse)
     print(valid_mse)
     # Multi_Regressor.predict(temp)
+      """""
+    # retrain
     """""
-    #retrain
     h = MultiRegressor(sklearn.linear_model.Ridge(alpha=37.214061, fit_intercept=True),
                                      sklearn.linear_model.Ridge(alpha=702.973212, fit_intercept=True))
     retrain_model(h,trainX, trainY, data_after_drop_test)
-
+    """""
 
     #part 8:
+
     h = MultiRegressor(sklearn.linear_model.Ridge(alpha=37.214061, fit_intercept=True),
                                      sklearn.linear_model.Ridge(alpha=702.973212, fit_intercept=True))
     df = calc_pred4(h,all_dataX, all_dataY,dataset_unlabeled_normalize)
@@ -396,10 +402,11 @@ if __name__ == '__main__':
 
 
     """""
-    scale = np.logspace(-2,12,num=500)
+    # scale = np.logspace(-2,12,num=500)
     #1000000000000.0
-   # scale = np.linspace(20000000000000, 900000000000000, num=200)
-    train_list, valid_list = calcHyperparameter(scale, xmen, men.VariantScore)
+    scale = np.linspace(20000000000000, 900000000000000, num=200)
+    xmen_no_sex =xmen.drop(['Sex'], axis=1)
+    train_list, valid_list = calcHyperparameter(scale, xmen_no_sex, men.VariantScore)
     index_min = min(range(len(valid_list)), key=valid_list.__getitem__)
     print(index_min)
     print(min(valid_list))
@@ -415,7 +422,7 @@ if __name__ == '__main__':
     plt.grid()
     plt.savefig('male_poly.jpg', bbox_inches='tight')
     plt.close()
-"""""
+    """""
 
     """""
     # TODO: have two plots: with and without dummy regressor
@@ -440,7 +447,7 @@ if __name__ == '__main__':
       """""
 
     #     Q20:
-
+    """""
     Multi_Regressor = MultiRegressor(sklearn.linear_model.Ridge(alpha=387035175879397.0, fit_intercept=True),
                                      sklearn.linear_model.Ridge(alpha=11268296.593186373, fit_intercept=True))
     X_poly_data = poly_data.drop(['VariantScore'], axis=1)
@@ -453,12 +460,28 @@ if __name__ == '__main__':
     h =  MultiRegressor(sklearn.linear_model.Ridge(alpha=387035175879397.0, fit_intercept=True),
                                      sklearn.linear_model.Ridge(alpha=11268296.593186373, fit_intercept=True))
     retrain_model(h,X_poly_data, poly_data.VariantScore, data_after_drop_test_poly)
-
+     """""
 
     #part 8:
+
     h = MultiRegressor(sklearn.linear_model.Ridge(alpha=37.214061, fit_intercept=True),
                                      sklearn.linear_model.Ridge(alpha=702.973212, fit_intercept=True))
     df = calc_pred4(h,all_data_polyX, all_data_polyY,dataset_unlabeled_normalize_poly)
     df.to_csv(r'C:\Users\dor\PycharmProjects\MLhw3\pred5.csv')
+
+
+
+    # Q21
+    # data_after_drop.drop(['VariantScore'], axis=1).copy()
+    # trainx_arr = trainX.to_numpy()
+    # trainy_arr = trainY.to_numpy()
+    print(data_after_drop.info())
+    mlp = MLPRegressor(max_iter=700,alpha=0.0001)
+    train_mse, valid_mse = CV_evaluation(mlp, trainX, trainY, n_splits=5)
+    print(train_mse)
+    print(valid_mse)
+
+
+
 
 
