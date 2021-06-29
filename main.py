@@ -480,6 +480,7 @@ if __name__ == '__main__':
     train_mse, valid_mse = CV_evaluation(mlp, trainX, trainY, n_splits=5)
     print(train_mse)
     print(valid_mse)
+    print(valid_mse)
 
 
 
