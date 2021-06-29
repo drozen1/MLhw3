@@ -16,6 +16,9 @@ import re
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import mean_squared_error, make_scorer
 from sklearn.linear_model import Ridge
+from sklearn.svm import SVR, SVC
+from sklearn.ensemble import BaggingRegressor, BaggingClassifier
+from sklearn.datasets import make_regression
 
 warnings.filterwarnings('ignore')
 from sklearn.base import BaseEstimator, RegressorMixin
@@ -471,18 +474,42 @@ if __name__ == '__main__':
 
 
 
-    # Q21
-    # data_after_drop.drop(['VariantScore'], axis=1).copy()
-    # trainx_arr = trainX.to_numpy()
-    # trainy_arr = trainY.to_numpy()
-    print(data_after_drop.info())
-    mlp = MLPRegressor(max_iter=700,alpha=0.0001)
-    train_mse, valid_mse = CV_evaluation(mlp, trainX, trainY, n_splits=5)
-    print(train_mse)
-    print(valid_mse)
-    print(valid_mse)
+    # # Q21
+    # # data_after_drop.drop(['VariantScore'], axis=1).copy()
+    # # trainx_arr = trainX.to_numpy()
+    # # trainy_arr = trainY.to_numpy()
+    # print(data_after_drop.info())
+    # mlp = MLPRegressor(max_iter=700,alpha=0.0001)
+    # train_mse, valid_mse = CV_evaluation(mlp, trainX, trainY, n_splits=5)
+    # print(train_mse)
+    # print(valid_mse)
+    # print(valid_mse)
+
+    # # 2.2 Trying Bagging of SVM with polynomial kernel
+    # bag_poly_svm = get_best_classifier_on_train(BaggingClassifier(base_estimator=SVC(gamma='auto', kernel="poly"), n_estimators=20, random_state=0), train_set, 7)
+    # bag_pred = bag_poly_svm.predict(validation_set.drop('Vote', axis=1))
+    # curr_f1_score = metrics.f1_score(validation_set['Vote'], bag_pred, average='weighted')
+    # bag_poly_svm_accuracy = metrics.accuracy_score(validation_set['Vote'], bag_pred)
+    # print("Bagging with 20 polynomial SVC: f1 score on validation is: {}, and accuracy: {}".format(curr_f1_score, bag_poly_svm_accuracy))
 
 
-
-
-
+    # bag = BaggingRegressor(n_estimators=30, random_state=0)
+    # train_mse, valid_mse = CV_evaluation(bag, trainX, trainY, n_splits=5)
+    # print(train_mse)
+    # print(valid_mse)
+    scale = range(10,20,1)
+    train = []
+    validation = []
+    for Alpha in scale:
+        h = BaggingRegressor(n_estimators=Alpha, random_state=0)
+        # h = MultiRegressor(sklearn.linear_model.Ridge(alpha=37.214061, fit_intercept=True),
+        #                    sklearn.linear_model.Ridge(alpha=702.973212, fit_intercept=True))
+        train_mse, valid_mse = CV_evaluation(h, all_data_polyX, all_data_polyY, n_splits=5)
+        print(Alpha)
+        print(train_mse)
+        print(valid_mse)
+        train.append(train_mse)
+        validation.append(valid_mse)
+    # h = BaggingRegressor(n_estimators=100, random_state=0)
+    # train_mse, valid_mse = CV_evaluation(h, trainX, trainY, n_splits=5)
+    # print(valid_mse)
